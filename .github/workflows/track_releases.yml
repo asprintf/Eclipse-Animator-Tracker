@@ -1,0 +1,82 @@
+name: Track Upstream Releases
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: track-releases
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Creator Store for updates
+        id: check
+        run: |
+          python3 tools/track_releases.py --update
+
+      - name: Commit updated release ledger
+        if: steps.check.outputs.has_update == 'true'
+        env:
+          TAG: ${{ steps.check.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add releases.json
+          git commit -m "Record upstream release ${TAG}"
+          git pull --rebase origin main
+          git push origin main
+
+      - name: Notify on new version release
+        if: steps.check.outputs.is_new_version == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.check.outputs.tag }}
+          VERSION: ${{ steps.check.outputs.version }}
+          UPDATED: ${{ steps.check.outputs.updated }}
+        run: |
+          gh issue create \
+            --title "Upstream Release: ${TAG} (${VERSION}) - ${UPDATED}" \
+            --body "### Upstream Release Detected 🚀
+
+          A new release for **Eclipse Animator** was published to the Roblox Creator Store.
+
+          - **Build Tag:** \`${TAG}\`
+          - **Version:** \`${VERSION}\`
+          - **Published At (UTC):** \`${UPDATED}\`
+          - **Creator Store Asset:** [86116556258301](https://create.roblox.com/store/asset/86116556258301)"
+
+      - name: Alert if asset is inaccessible or moderated
+        if: steps.check.outputs.api_alert == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          CODE: ${{ steps.check.outputs.api_error_code }}
+          MSG: ${{ steps.check.outputs.api_error_message }}
+        run: |
+          open_alerts=$(gh issue list --state open --search 'in:title "Asset Inaccessible"' --json number --jq 'length')
+          if [ "$open_alerts" != "0" ]; then
+            echo "Open alert already exists; skipping."
+            exit 0
+          fi
+          gh issue create \
+            --title "⚠️ [CRITICAL] Eclipse Animator Asset Inaccessible (HTTP ${CODE})" \
+            --body "### Asset Inaccessible Alert 🚨
+
+          The automated release tracker received an error from Roblox Creator Store:
+
+          > **HTTP ${CODE}**: ${MSG}
+
+          The asset may have been moderated, taken down, or changed privacy settings. Please check Creator Store:
+          https://create.roblox.com/store/asset/86116556258301"
