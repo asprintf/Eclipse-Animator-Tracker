@@ -57,6 +57,26 @@ jobs:
           - **Published At (UTC):** \`${UPDATED}\`
           - **Creator Store Asset:** [86116556258301](https://create.roblox.com/store/asset/86116556258301)"
 
+      - name: Notify on new revision / unversioned update
+        if: steps.check.outputs.is_metadata_update == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ steps.check.outputs.tag }}
+          VERSION: ${{ steps.check.outputs.version }}
+          UPDATED: ${{ steps.check.outputs.updated }}
+        run: |
+          gh issue create \
+            --title "Upstream Revision: ${TAG} (New Revision / Patch) - ${UPDATED}" \
+            --body "### Upstream Revision Detected 🔄
+
+          A new revision or patch for **Eclipse Animator** was published to the Roblox Creator Store without a version number bump.
+
+          - **Build Tag:** \`${TAG}\`
+          - **Version String:** \`${VERSION}\`
+          - **Published At (UTC):** \`${UPDATED}\`
+          - **Creator Store Asset:** [86116556258301](https://create.roblox.com/store/asset/86116556258301)"
+
       - name: Alert if asset is inaccessible or moderated
         if: steps.check.outputs.api_alert == 'true'
         env:

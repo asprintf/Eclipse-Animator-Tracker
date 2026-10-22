@@ -154,7 +154,7 @@ def main():
             "version": current_version,
             "tag": current_tag,
             "updated": current_updated,
-            "type": "release" if is_new_version else "metadata",
+            "type": "release" if is_new_version else "revision",
             "recordedAt": now_iso,
         })
         with open(RELEASES_FILE, "w", encoding="utf-8") as f:
