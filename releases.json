@@ -3,7 +3,7 @@
   "name": "Eclipse Animator",
   "version": "v1.0979",
   "tag": "v10979",
-  "lastUpdated": "2026-10-22T06:03:36.19Z",
+  "lastUpdated": "2026-10-23T05:19:19.532Z",
   "history": [
     {
       "version": "v1.0974",
@@ -32,6 +32,13 @@
       "updated": "2026-10-22T06:03:36.19Z",
       "type": "metadata",
       "recordedAt": "2026-10-22T06:25:33.116711+00:00"
+    },
+    {
+      "version": "v1.0979",
+      "tag": "v10979",
+      "updated": "2026-10-23T05:19:19.532Z",
+      "type": "revision",
+      "recordedAt": "2026-10-23T09:09:21.048105+00:00"
     }
   ]
 }
