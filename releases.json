@@ -1,9 +1,9 @@
 {
   "assetId": 86116556258301,
   "name": "Eclipse Animator",
-  "version": "v1.0984",
-  "tag": "v10984",
-  "lastUpdated": "2026-11-03T22:32:20.672Z",
+  "version": "v1.0985",
+  "tag": "v10985",
+  "lastUpdated": "2026-11-07T00:48:50.517Z",
   "history": [
     {
       "version": "v1.0974",
@@ -74,6 +74,13 @@
       "updated": "2026-11-03T22:32:20.672Z",
       "type": "release",
       "recordedAt": "2026-11-04T00:07:03.604869+00:00"
+    },
+    {
+      "version": "v1.0985",
+      "tag": "v10985",
+      "updated": "2026-11-07T00:48:50.517Z",
+      "type": "release",
+      "recordedAt": "2026-11-07T04:59:17.851256+00:00"
     }
   ]
 }
